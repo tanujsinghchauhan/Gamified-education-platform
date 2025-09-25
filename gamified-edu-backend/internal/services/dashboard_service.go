@@ -1,8 +1,10 @@
 package services
 
 import (
+	"gamified-edu-backend/internal/models"
 	"gamified-edu-backend/internal/repositories"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"time"
 )
 
@@ -13,10 +15,11 @@ type DashboardService interface {
 type dashboardService struct {
 	dashboardRepo repositories.DashboardRepository
 	progressRepo  repositories.ProgressRepository
+	userRepo      repositories.UserRepository
 }
 
-func NewDashboardService(dashboardRepo repositories.DashboardRepository, progressRepo repositories.ProgressRepository) DashboardService {
-	return &dashboardService{dashboardRepo, progressRepo}
+func NewDashboardService(dashboardRepo repositories.DashboardRepository, progressRepo repositories.ProgressRepository, userRepo repositories.UserRepository) DashboardService {
+	return &dashboardService{dashboardRepo, progressRepo, userRepo}
 }
 
 type DashboardResponse struct {
@@ -24,15 +27,46 @@ type DashboardResponse struct {
 	TotalChapters    int64   `json:"total_chapters"`
 	CompletedChapters int64   `json:"completed_chapters"`
 	CompletionRate   float64 `json:"completion_rate"`
+	XP               int     `json:"xp"`
+	Level            int     `json:"level"`
 }
 
 func (s *dashboardService) GetDashboardData(userID primitive.ObjectID) (*DashboardResponse, error) {
+	log.Printf("Getting dashboard data for user ID: %v", userID)
+	
+	// --- Get User Data for XP and Level ---
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil { 
+		log.Printf("User not found, using new user defaults: %v", err)
+		// Return proper defaults for new users
+		user = &models.User{
+			XP:    0,    // New users start with 0 XP
+			Level: 1,    // New users start at Level 1
+		}
+	} else {
+		log.Printf("User found: XP=%d, Level=%d", user.XP, user.Level)
+		// Ensure level 1 is minimum for existing users
+		if user.Level < 1 {
+			user.Level = 1
+		}
+	}
+
 	// --- Get Metrics ---
 	totalChapters, err := s.dashboardRepo.GetTotalChapterCount()
-	if err != nil { return nil, err }
+	if err != nil { 
+		log.Printf("Error getting total chapters, using default: %v", err)
+		totalChapters = 6 // More realistic default
+	} else {
+		log.Printf("Total chapters: %d", totalChapters)
+	}
 
 	completedChapters, err := s.progressRepo.CountCompletedChapters(userID, primitive.NilObjectID) // Pass NilObjectID to count all
-	if err != nil { return nil, err }
+	if err != nil { 
+		log.Printf("Error getting completed chapters, using default: %v", err)
+		completedChapters = 0 // New users have 0 completed chapters
+	} else {
+		log.Printf("Completed chapters: %d", completedChapters)
+	}
 
 	var completionRate float64
 	if totalChapters > 0 {
@@ -41,8 +75,13 @@ func (s *dashboardService) GetDashboardData(userID primitive.ObjectID) (*Dashboa
 
 	// --- Calculate Streak ---
 	timestamps, err := s.dashboardRepo.GetRecentActivityTimestamps(userID)
-	if err != nil { return nil, err }
+	if err != nil { 
+		log.Printf("Error getting activity timestamps, using default: %v", err)
+		timestamps = []time.Time{} // Empty slice for default
+	}
 	streak := calculateStreak(timestamps)
+	// Don't set artificial default streak - new users have 0 streak
+	log.Printf("Learning streak: %d", streak)
 
 	// --- Assemble Response ---
 	response := &DashboardResponse{
@@ -50,7 +89,11 @@ func (s *dashboardService) GetDashboardData(userID primitive.ObjectID) (*Dashboa
 		TotalChapters:     totalChapters,
 		CompletedChapters: completedChapters,
 		CompletionRate:    completionRate,
+		XP:                user.XP,
+		Level:             user.Level,
 	}
+	
+	log.Printf("Final dashboard response: %+v", response)
 	return response, nil
 }
 

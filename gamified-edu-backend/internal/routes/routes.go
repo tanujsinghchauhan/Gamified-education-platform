@@ -4,8 +4,10 @@ import (
 	"gamified-edu-backend/internal/controllers"
 	"gamified-edu-backend/internal/repositories"
 	"gamified-edu-backend/internal/services"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time" // <-- IMPORT THE 'time' PACKAGE
 )
 
 // RegisterRoutes sets up all the application routes and dependencies.
@@ -21,7 +23,7 @@ func RegisterRoutes(router *gin.Engine, db *mongo.Database) {
 	authService := services.NewAuthService(userRepo)
 	courseService := services.NewCourseService(courseRepo, progressRepo)
 	progressService := services.NewProgressService(progressRepo, userRepo, activityRepo)
-	dashboardService := services.NewDashboardService(dashboardRepo, progressRepo)
+	dashboardService := services.NewDashboardService(dashboardRepo, progressRepo, userRepo)
 
 	// --- CONTROLLERS ---
 	authController := controllers.NewAuthController(authService)
@@ -30,23 +32,20 @@ func RegisterRoutes(router *gin.Engine, db *mongo.Database) {
 	dashboardController := controllers.NewDashboardController(dashboardService)
 
 	// --- CORS MIDDLEWARE ---
-	router.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-		c.Next()
-	})
+	// REPLACE THE PREVIOUS CONFIGURATION WITH THIS MORE EXPLICIT ONE
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Allows all origins
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// --- API V1 GROUP ---
 	apiV1 := router.Group("/api/v1")
 
 	// --- ROUTES REGISTRATION ---
-	// This is the part that was missing.
-	// It calls the functions from your other route files.
 	AuthRoutes(apiV1, authController)
 	CourseRoutes(apiV1, courseController)
 	ProgressRoutes(apiV1, progressController)

@@ -37,9 +37,15 @@ type LoginInput struct {
 func (s *authService) RegisterUser(input RegisterInput) (*models.User, error) {
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
     if err != nil { return nil, err }
+    
+    // Initialize new users with proper starting values
     user := models.User{
-        FirstName: input.FirstName, LastName: input.LastName,
-        Email: input.Email, PasswordHash: string(hashedPassword),
+        FirstName:    input.FirstName, 
+        LastName:     input.LastName,
+        Email:        input.Email, 
+        PasswordHash: string(hashedPassword),
+        XP:           0,    // New users start with 0 XP
+        Level:        1,    // New users start at Level 1
     }
     err = s.userRepo.Create(&user)
     return &user, err

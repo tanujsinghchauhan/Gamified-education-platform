@@ -14,6 +14,8 @@ type ProgressRepository interface {
 	FindOrCreateStatus(userID, chapterID, courseID primitive.ObjectID) (*models.UserChapterStatus, error)
 	UpdateStatus(status *models.UserChapterStatus) error
 	CountCompletedChapters(userID, courseID primitive.ObjectID) (int64, error)
+	FindByUserAndChapter(userID, chapterID primitive.ObjectID) (*models.UserChapterStatus, error)
+	GetUserCourseProgress(userID, courseID primitive.ObjectID) ([]*models.UserChapterStatus, error)
 }
 
 type progressRepository struct {
@@ -64,4 +66,41 @@ func (r *progressRepository) CountCompletedChapters(userID, courseID primitive.O
     }
 
 	return r.collection.CountDocuments(context.Background(), filter)
+}
+
+func (r *progressRepository) FindByUserAndChapter(userID, chapterID primitive.ObjectID) (*models.UserChapterStatus, error) {
+	filter := bson.M{"user_id": userID, "chapter_id": chapterID}
+	var status models.UserChapterStatus
+	err := r.collection.FindOne(context.Background(), filter).Decode(&status)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil // Return nil instead of error for no documents
+		}
+		return nil, err
+	}
+	return &status, nil
+}
+
+func (r *progressRepository) GetUserCourseProgress(userID, courseID primitive.ObjectID) ([]*models.UserChapterStatus, error) {
+	filter := bson.M{"user_id": userID, "course_id": courseID}
+	cursor, err := r.collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var progressList []*models.UserChapterStatus
+	for cursor.Next(context.Background()) {
+		var progress models.UserChapterStatus
+		if err := cursor.Decode(&progress); err != nil {
+			return nil, err
+		}
+		progressList = append(progressList, &progress)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return progressList, nil
 }

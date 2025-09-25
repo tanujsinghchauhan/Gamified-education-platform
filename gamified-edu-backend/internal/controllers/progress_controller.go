@@ -42,3 +42,23 @@ func (ctrl *ProgressController) MarkComponentComplete(c *gin.Context) {
 
     pkg.SendResponse(c, http.StatusOK, gin.H{"message": "Progress updated successfully"})
 }
+
+// GET /api/v1/progress/course/:courseId
+func (ctrl *ProgressController) GetCourseProgress(c *gin.Context) {
+    userID, _ := c.Get("userID")
+    courseIDHex := c.Param("courseId")
+
+    courseID, err := primitive.ObjectIDFromHex(courseIDHex)
+    if err != nil {
+        pkg.SendError(c, http.StatusBadRequest, "Invalid course ID format")
+        return
+    }
+
+    progress, err := ctrl.progressService.GetUserCourseProgress(userID.(primitive.ObjectID), courseID)
+    if err != nil {
+        pkg.SendError(c, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    pkg.SendResponse(c, http.StatusOK, gin.H{"progress": progress})
+}

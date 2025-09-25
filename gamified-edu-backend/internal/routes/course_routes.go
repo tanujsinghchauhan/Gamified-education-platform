@@ -11,5 +11,6 @@ func CourseRoutes(router *gin.RouterGroup, ctrl *controllers.CourseController) {
 	courses.Use(middleware.AuthMiddleware())
 	{
 		courses.GET("/", ctrl.GetAllCourses)
+		courses.GET("/:courseId", ctrl.GetCourseDetails)
 	}
 }

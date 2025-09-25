@@ -12,5 +12,7 @@ func ProgressRoutes(router *gin.RouterGroup, ctrl *controllers.ProgressControlle
     {
         // A single, powerful route to handle all component updates
         progress.POST("/course/:courseId/chapter/:chapterId/:component", ctrl.MarkComponentComplete)
+        // Get user progress for a course
+        progress.GET("/course/:courseId", ctrl.GetCourseProgress)
     }
 }

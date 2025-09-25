@@ -4,11 +4,13 @@ import (
     "context"
     "gamified-edu-backend/internal/models"
     "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "go.mongodb.org/mongo-driver/mongo"
 )
 
 type CourseRepository interface {
     FindAll() ([]models.Course, error)
+    FindByID(id primitive.ObjectID) (*models.Course, error)
 }
 
 type courseRepository struct {
@@ -29,4 +31,13 @@ func (r *courseRepository) FindAll() ([]models.Course, error) {
         return nil, err
     }
     return courses, nil
+}
+
+func (r *courseRepository) FindByID(id primitive.ObjectID) (*models.Course, error) {
+    var course models.Course
+    err := r.collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&course)
+    if err != nil {
+        return nil, err
+    }
+    return &course, nil
 }
