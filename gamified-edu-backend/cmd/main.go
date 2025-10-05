@@ -1,11 +1,12 @@
 package main
 
 import (
-    "gamified-edu-backend/internal/config"
-    "gamified-edu-backend/internal/routes"
-    "log"
+	"gamified-edu-backend/internal/config"
+	"gamified-edu-backend/internal/routes"
+	"log"
+	"os"
 
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -17,6 +18,10 @@ func main() {
     log.Println("Setting up routes...")
     routes.RegisterRoutes(r, db)
 
-    log.Println("Starting server on port 8085...")
-    r.Run(":8085")
+    port := ":8085"
+    if p := os.Getenv("PORT"); p != "" {
+        port = ":" + p
+    }
+    log.Printf("Starting server on port %s...", port)
+    r.Run(port)
 }

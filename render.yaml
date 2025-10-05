@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: gamified-edu-backend
+    runtime: go
+    rootDir: gamified-edu-backend
+    buildCommand: go build -o main ./cmd/main.go
+    startCommand: ./main
+    envVars:
+      - key: PORT
+        value: 8085
