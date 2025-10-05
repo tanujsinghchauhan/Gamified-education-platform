@@ -8,3 +8,5 @@ services:
     envVars:
       - key: PORT
         value: 8085
+      - key: FRONTEND_URL
+        value: "https://your-vercel-app-url.vercel.app"
