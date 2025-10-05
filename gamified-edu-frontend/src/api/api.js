@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8085";
+// Use VITE_API_URL when provided by the build environment (Vercel). Fall back to
+// the deployed backend on Render for production/testing when the env var is not set.
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://gamified-education-platform-1.onrender.com";
 
 const apiClient = axios.create({
   baseURL: `${BASE_URL}/api/v1`,
