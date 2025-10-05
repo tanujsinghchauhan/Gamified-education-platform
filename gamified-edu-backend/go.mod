@@ -1,6 +1,6 @@
 module gamified-edu-backend
 
-go 1.25.1
+go 1.25.0
 
 require (
 	github.com/gin-contrib/cors v1.7.6
