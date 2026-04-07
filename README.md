@@ -2,7 +2,7 @@
 
 A full-stack web application that makes learning engaging through gamification. Users can explore courses, track progress, earn XP points, and compete on leaderboards.
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -17,7 +17,7 @@ A full-stack web application that makes learning engaging through gamification. 
 - [Deployment](#deployment)
 - [Project Architecture](#project-architecture)
 
-## ✨ Features
+##  Features
 
 ### User Management
 - **Authentication**: Secure user registration and login with JWT tokens
@@ -36,7 +36,7 @@ A full-stack web application that makes learning engaging through gamification. 
 - **Activities**: Complete activities to earn XP and progress
 - **FAQ Section**: Common questions and answers
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 ### Frontend
 - **Framework**: React 19 with Vite
@@ -58,7 +58,7 @@ A full-stack web application that makes learning engaging through gamification. 
 - **Frontend**: Vercel
 - **Backend**: Render
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 gamified-education-platform/
@@ -92,7 +92,7 @@ gamified-education-platform/
 └── README.md                      # Project documentation
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -105,7 +105,7 @@ Make sure you have installed:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/gamified-education-platform.git
+   git clone https://github.com/tanujsinghchauhan/gamified-education-platform.git
    cd gamified-education-platform
    ```
 
@@ -188,7 +188,7 @@ Create a `.env` file in `gamified-edu-frontend/`:
 VITE_API_URL=http://localhost:8085
 ```
 
-## 📚 API Documentation
+##  API Documentation
 
 ### Authentication Endpoints
 
@@ -288,32 +288,6 @@ cd gamified-edu-backend
 go run cmd/seed/main.go
 ```
 
-## 📦 Deployment
-
-### Frontend Deployment (Vercel)
-
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Set build command: `npm run build`
-4. Set output directory: `dist`
-5. Environment variable: `VITE_API_URL=https://your-backend-url`
-
-### Backend Deployment (Render)
-
-1. Push code to GitHub
-2. Create new Web Service on Render
-3. Configuration:
-   - Runtime: Go
-   - Build Command: `go build -o main ./cmd/main.go`
-   - Start Command: `./main`
-   - Environment Variables:
-     - `MONGODB_URI`: Your MongoDB connection string
-     - `JWT_SECRET`: Your JWT secret
-     - `FRONTEND_URL`: Your frontend URL
-     - `PORT`: 8085
-
-See `render.yaml` for complete deployment configuration.
-
 ## 🏗️ Project Architecture
 
 ### Frontend Architecture
@@ -384,7 +358,7 @@ Gin Server
 }
 ```
 
-## 🔐 Security Features
+##  Security Features
 
 - **JWT Authentication**: Secure token-based authentication
 - **Password Hashing**: Using bcrypt for password security
@@ -392,23 +366,20 @@ Gin Server
 - **Protected Routes**: Frontend route protection for authenticated users
 - **Input Validation**: Server-side validation of all inputs
 
-## 📝 Contributing
+## Contributing
 
 1. Create a feature branch: `git checkout -b feature/your-feature`
 2. Commit changes: `git commit -m 'Add new feature'`
 3. Push to branch: `git push origin feature/your-feature`
 4. Open a Pull Request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see LICENSE file for details.
 
-## 🤝 Support
+##  Support
 
 For issues and questions, please create an issue on GitHub or contact the development team.
 
-## 🔗 Links
-
-- **Frontend**: [https://gamified-education-platform.vercel.app](https://gamified-education-platform.vercel.app)
-- **API Documentation**: Available at `/api/docs` (if implemented)
-- **GitHub**: [Repository Link](https://github.com/yourusername/gamified-education-platform)
+##  Links
+- **GitHub**: [Repository Link](https://github.com/tanujsinghchauhan/gamified-education-platform)
